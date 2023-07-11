@@ -3,7 +3,9 @@ package br.com.gilson.apigateway;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,13 @@ public class PersonController {
 	@Autowired
 	private PersonService personService;
 
+	@PostMapping()
+	public ResponseEntity<Person> create(@RequestBody() Person personBody) {
+		var person = personService.create(personBody);
+
+		return ResponseEntity.ok(person);
+	}
+
 	@GetMapping()
 	public ResponseEntity<List<Person>> findAll() {
 
@@ -38,18 +47,18 @@ public class PersonController {
 		return ResponseEntity.ok(person);
 	}
 
-	@PostMapping()
-	public ResponseEntity<Person> create(@RequestBody() Person personBody) {
-		var person = personService.create(personBody);
+	@PutMapping("/{id}")
+	public ResponseEntity<Person> update(@PathVariable(value = "id") String id, @RequestBody() Person personBody)
+			throws Exception {
+		var person = personService.update(id, personBody);
 
 		return ResponseEntity.ok(person);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Person> update(@PathVariable(value = "id") String id, @RequestBody() Person personBody) {
-		var person = personService.update(id, personBody);
-
-		return ResponseEntity.ok(person);
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable(value = "id") String id) throws Exception {
+		personService.delete(id);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
 }

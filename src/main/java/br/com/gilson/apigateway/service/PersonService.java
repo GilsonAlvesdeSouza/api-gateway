@@ -16,6 +16,15 @@ public class PersonService {
 	private final AtomicLong counter = new AtomicLong();
 	private Logger logger = Logger.getLogger(PersonService.class.getName());
 
+	public Person create(Person person) {
+		logger.info("Creating person");
+
+		Person newPerson = person;
+		newPerson.setId(counter.incrementAndGet());
+
+		return newPerson;
+	}
+
 	public List<Person> findAll() {
 		logger.info("listing persons!");
 		List<Person> persons = new ArrayList<>();
@@ -32,9 +41,13 @@ public class PersonService {
 
 		logger.info("Find one person! id = " + id);
 
+		if (!isNumber(id)) {
+			throw new BadRequestException("informed id must be of numeric type");
+		}
+
 		Person person = new Person();
 
-		person.setId(counter.incrementAndGet());
+		person.setId(Long.parseLong(id));
 		person.setFirstName("Gilson");
 		person.setLastName("Souza");
 		person.setAddress("Anápolis-Go - Brasil");
@@ -43,16 +56,10 @@ public class PersonService {
 		return person;
 	}
 
-	public Person create(Person person) {
-		logger.info("Creating person");
-
-		Person newPerson = person;
-		newPerson.setId(counter.incrementAndGet());
-
-		return newPerson;
-	}
-
 	public Person update(String id, Person person) {
+
+		logger.info("updating person!");
+
 		Person newPerson = person;
 		if (!isNumber(id)) {
 			throw new BadRequestException("informed id must be of numeric type");
@@ -60,6 +67,15 @@ public class PersonService {
 		person.setId(Long.parseLong(id));
 
 		return newPerson;
+	}
+
+	public void delete(String id) {
+
+		logger.info("excluding person");
+
+		if (!isNumber(id)) {
+			throw new BadRequestException("informed id must be of numeric type");
+		}
 	}
 
 	private boolean isNumber(String id) {
