@@ -29,4 +29,5 @@ public class CustomizedResponseEntityHandler extends ResponseEntityExceptionHand
 				req.getDescription(false));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+
 }
