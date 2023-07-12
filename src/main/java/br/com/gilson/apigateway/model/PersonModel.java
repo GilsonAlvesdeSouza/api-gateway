@@ -3,7 +3,7 @@ package br.com.gilson.apigateway.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Person implements Serializable {
+public class PersonModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -13,7 +13,7 @@ public class Person implements Serializable {
 	private String address;
 	private String gender;
 
-	public Person() {
+	public PersonModel() {
 	}
 
 	public Long getId() {
@@ -69,7 +69,7 @@ public class Person implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Person other = (Person) obj;
+		PersonModel other = (PersonModel) obj;
 		return Objects.equals(address, other.address) && Objects.equals(firstName, other.firstName)
 				&& Objects.equals(gender, other.gender) && Objects.equals(id, other.id)
 				&& Objects.equals(lastName, other.lastName);

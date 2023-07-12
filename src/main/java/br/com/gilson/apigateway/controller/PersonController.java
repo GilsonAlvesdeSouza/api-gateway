@@ -1,10 +1,12 @@
-package br.com.gilson.apigateway;
+package br.com.gilson.apigateway.controller;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.gilson.apigateway.model.Person;
+import br.com.gilson.apigateway.dto.PersonDto;
+import br.com.gilson.apigateway.model.PersonModel;
 import br.com.gilson.apigateway.service.PersonService;
+import jakarta.validation.Valid;
 
 @RestController()
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/person")
 public class PersonController {
 
@@ -25,14 +30,17 @@ public class PersonController {
 	private PersonService personService;
 
 	@PostMapping()
-	public ResponseEntity<Person> create(@RequestBody() Person personBody) {
-		var person = personService.create(personBody);
+	public ResponseEntity<Object> create(@RequestBody @Valid PersonDto personDto) {
 
-		return ResponseEntity.ok(person);
+		var personModel = new PersonModel();
+
+		BeanUtils.copyProperties(personDto, personModel);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(personService.create(personModel));
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Person>> findAll() {
+	public ResponseEntity<List<PersonModel>> findAll() {
 
 		var persons = personService.findAll();
 
@@ -40,7 +48,7 @@ public class PersonController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Person> getById(@PathVariable(value = "id") String id) throws Exception {
+	public ResponseEntity<PersonModel> getById(@PathVariable(value = "id") String id) throws Exception {
 
 		var person = personService.findById(id);
 
@@ -48,8 +56,8 @@ public class PersonController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Person> update(@PathVariable(value = "id") String id, @RequestBody() Person personBody)
-			throws Exception {
+	public ResponseEntity<PersonModel> update(@PathVariable(value = "id") String id,
+			@RequestBody() PersonModel personBody) throws Exception {
 		var person = personService.update(id, personBody);
 
 		return ResponseEntity.ok(person);

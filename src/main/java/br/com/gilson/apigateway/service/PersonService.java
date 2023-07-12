@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import br.com.gilson.apigateway.exceptions.BadRequestException;
-import br.com.gilson.apigateway.model.Person;
+import br.com.gilson.apigateway.model.PersonModel;
 
 @Service
 public class PersonService {
@@ -16,28 +16,28 @@ public class PersonService {
 	private final AtomicLong counter = new AtomicLong();
 	private Logger logger = Logger.getLogger(PersonService.class.getName());
 
-	public Person create(Person person) {
+	public PersonModel create(PersonModel person) {
 		logger.info("Creating person");
 
-		Person newPerson = person;
+		PersonModel newPerson = person;
 		newPerson.setId(counter.incrementAndGet());
 
 		return newPerson;
 	}
 
-	public List<Person> findAll() {
+	public List<PersonModel> findAll() {
 		logger.info("listing persons!");
-		List<Person> persons = new ArrayList<>();
+		List<PersonModel> persons = new ArrayList<>();
 
 		for (int i = 1; i <= 9; i++) {
-			Person person = MockPerson(i);
+			PersonModel person = MockPerson(i);
 			persons.add(person);
 		}
 
 		return persons;
 	}
 
-	public Person findById(String id) {
+	public PersonModel findById(String id) {
 
 		logger.info("Find one person! id = " + id);
 
@@ -45,7 +45,7 @@ public class PersonService {
 			throw new BadRequestException("informed id must be of numeric type");
 		}
 
-		Person person = new Person();
+		PersonModel person = new PersonModel();
 
 		person.setId(Long.parseLong(id));
 		person.setFirstName("Gilson");
@@ -56,11 +56,11 @@ public class PersonService {
 		return person;
 	}
 
-	public Person update(String id, Person person) {
+	public PersonModel update(String id, PersonModel person) {
 
 		logger.info("updating person!");
 
-		Person newPerson = person;
+		PersonModel newPerson = person;
 		if (!isNumber(id)) {
 			throw new BadRequestException("informed id must be of numeric type");
 		}
@@ -83,9 +83,9 @@ public class PersonService {
 		return id.matches("[+]?[0-9]*");
 	}
 
-	private Person MockPerson(int i) {
+	private PersonModel MockPerson(int i) {
 
-		Person person = new Person();
+		PersonModel person = new PersonModel();
 
 		person.setId(counter.incrementAndGet());
 		person.setFirstName("Person name " + i);
