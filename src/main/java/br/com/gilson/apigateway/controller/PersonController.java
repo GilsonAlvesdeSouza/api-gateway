@@ -1,6 +1,9 @@
 package br.com.gilson.apigateway.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,37 +39,70 @@ public class PersonController {
 
 		BeanUtils.copyProperties(personDto, personModel);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(personService.create(personModel));
+		return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(personModel));
 	}
 
 	@GetMapping()
 	public ResponseEntity<List<PersonModel>> findAll() {
 
-		var persons = personService.findAll();
-
-		return ResponseEntity.ok(persons);
+		return ResponseEntity.status(HttpStatus.OK).body(personService.findAll());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<PersonModel> getById(@PathVariable(value = "id") String id) throws Exception {
+	public ResponseEntity<Object> getById(@PathVariable(value = "id") String id) throws Exception {
 
-		var person = personService.findById(id);
+		Optional<PersonModel> personModelOptional = personService.findById(id);
 
-		return ResponseEntity.ok(person);
+		if (!personModelOptional.isPresent()) {
+			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(personModelOptional.get());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<PersonModel> update(@PathVariable(value = "id") String id,
-			@RequestBody() PersonModel personBody) throws Exception {
-		var person = personService.update(id, personBody);
+	public ResponseEntity<Object> update(@PathVariable(value = "id") String id, @RequestBody @Valid PersonDto personDto)
+			throws Exception {
+		Optional<PersonModel> personModelOptional = personService.findById(id);
 
-		return ResponseEntity.ok(person);
+		if (!personModelOptional.isPresent()) {
+			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
+		}
+
+		var personModel = new PersonModel();
+
+		BeanUtils.copyProperties(personDto, personModel);
+
+		personModel.setId(personModelOptional.get().getId());
+
+		return ResponseEntity.status(HttpStatus.OK).body(personService.save(personModel));
+
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable(value = "id") String id) throws Exception {
-		personService.delete(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	public ResponseEntity<Object> delete(@PathVariable(value = "id") String id) throws Exception {
+		Optional<PersonModel> personModelOptional = personService.findById(id);
+
+		if (!personModelOptional.isPresent()) {
+			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
+		}
+
+		personService.delete(personModelOptional.get());
+
+		Map<String, Object> messageResponse = errorMessageResponse("Person deletd sucessfyly!", HttpStatus.OK);
+
+		return ResponseEntity.status(HttpStatus.OK).body(messageResponse);
+	}
+
+	private Map<String, Object> errorMessageResponse(String message, Object code) {
+		Map<String, Object> errorResponse = new HashMap<>();
+		errorResponse.put("code", "" + code);
+		errorResponse.put("message", message);
+
+		return errorResponse;
 	}
 
 }

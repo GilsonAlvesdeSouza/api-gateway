@@ -2,25 +2,31 @@ package br.com.gilson.apigateway.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.gilson.apigateway.exceptions.BadRequestException;
 import br.com.gilson.apigateway.model.PersonModel;
+import br.com.gilson.apigateway.repository.PersonRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PersonService {
 
-	private final AtomicLong counter = new AtomicLong();
+	@Autowired
+	private PersonRepository personRepository;
+
+//	private final AtomicLong counter = new AtomicLong(); // serve para gerar números aleatórios
 	private Logger logger = Logger.getLogger(PersonService.class.getName());
 
-	public PersonModel create(PersonModel person) {
+	@Transactional
+	public PersonModel save(PersonModel person) {
 		logger.info("Creating person");
 
-		PersonModel newPerson = person;
-		newPerson.setId(counter.incrementAndGet());
+		var newPerson = personRepository.save(person);
 
 		return newPerson;
 	}
@@ -29,15 +35,12 @@ public class PersonService {
 		logger.info("listing persons!");
 		List<PersonModel> persons = new ArrayList<>();
 
-		for (int i = 1; i <= 9; i++) {
-			PersonModel person = MockPerson(i);
-			persons.add(person);
-		}
+		persons = personRepository.findAll();
 
 		return persons;
 	}
 
-	public PersonModel findById(String id) {
+	public Optional<PersonModel> findById(String id) {
 
 		logger.info("Find one person! id = " + id);
 
@@ -45,37 +48,15 @@ public class PersonService {
 			throw new BadRequestException("informed id must be of numeric type");
 		}
 
-		PersonModel person = new PersonModel();
-
-		person.setId(Long.parseLong(id));
-		person.setFirstName("Gilson");
-		person.setLastName("Souza");
-		person.setAddress("Anápolis-Go - Brasil");
-		person.setGender("Male");
-
-		return person;
+		return personRepository.findById(Long.parseLong(id));
 	}
 
-	public PersonModel update(String id, PersonModel person) {
-
-		logger.info("updating person!");
-
-		PersonModel newPerson = person;
-		if (!isNumber(id)) {
-			throw new BadRequestException("informed id must be of numeric type");
-		}
-		person.setId(Long.parseLong(id));
-
-		return newPerson;
-	}
-
-	public void delete(String id) {
+	@Transactional
+	public void delete(PersonModel personModel) {
 
 		logger.info("excluding person");
 
-		if (!isNumber(id)) {
-			throw new BadRequestException("informed id must be of numeric type");
-		}
+		personRepository.delete(personModel);
 	}
 
 	private boolean isNumber(String id) {
@@ -83,15 +64,4 @@ public class PersonService {
 		return id.matches("[+]?[0-9]*");
 	}
 
-	private PersonModel MockPerson(int i) {
-
-		PersonModel person = new PersonModel();
-
-		person.setId(counter.incrementAndGet());
-		person.setFirstName("Person name " + i);
-		person.setLastName("Person lastName " + i);
-		person.setAddress("Person address " + i);
-		person.setGender("Person gender " + i);
-		return person;
-	}
 }

@@ -20,10 +20,13 @@ public class RestExceptionHandler {
 	public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();
 		ex.getBindingResult().getAllErrors().forEach((error) -> {
-			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
-			errors.put("message", "Campo '" + fieldName + "' " + errorMessage);
+			String fieldName = ((FieldError) error).getField();
+			errors.put("code", "" + HttpStatus.UNPROCESSABLE_ENTITY);
+			errors.put("fieldName", fieldName);
+			errors.put("message", errorMessage);
 		});
+
 		return errors;
 	}
 }

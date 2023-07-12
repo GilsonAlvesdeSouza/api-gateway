@@ -3,14 +3,33 @@ package br.com.gilson.apigateway.model;
 import java.io.Serializable;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "person")
 public class PersonModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(length = 120, nullable = false)
 	private String firstName;
+
+	@Column(length = 120, nullable = false)
 	private String lastName;
+
+	@Column(nullable = false)
 	private String address;
+
+	@Column(length = 1, nullable = false)
 	private String gender;
 
 	public PersonModel() {
