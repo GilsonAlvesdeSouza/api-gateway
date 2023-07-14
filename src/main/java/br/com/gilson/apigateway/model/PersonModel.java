@@ -20,10 +20,10 @@ public class PersonModel implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 120, nullable = false)
+	@Column(name = "first_name", length = 120, nullable = false)
 	private String firstName;
 
-	@Column(length = 120, nullable = false)
+	@Column(name = "last_name", length = 120, nullable = false)
 	private String lastName;
 
 	@Column(nullable = false)

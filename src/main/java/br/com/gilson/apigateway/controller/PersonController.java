@@ -53,7 +53,7 @@ public class PersonController {
 
 		Optional<PersonModel> personModelOptional = personService.findById(id);
 
-		if (!personModelOptional.isPresent()) {
+		if (personModelOptional.isEmpty()) {
 			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
 		}
@@ -66,7 +66,7 @@ public class PersonController {
 			throws Exception {
 		Optional<PersonModel> personModelOptional = personService.findById(id);
 
-		if (!personModelOptional.isPresent()) {
+		if (personModelOptional.isEmpty()) {
 			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
 		}
@@ -85,7 +85,7 @@ public class PersonController {
 	public ResponseEntity<Object> delete(@PathVariable(value = "id") String id) throws Exception {
 		Optional<PersonModel> personModelOptional = personService.findById(id);
 
-		if (!personModelOptional.isPresent()) {
+		if (personModelOptional.isEmpty()) {
 			Map<String, Object> messageResponse = errorMessageResponse("Person not found!", HttpStatus.NOT_FOUND);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
 		}
